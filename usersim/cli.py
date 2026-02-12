@@ -27,9 +27,9 @@ def main(verbose: bool):
 @main.command()
 @click.argument("test_file", type=click.Path(exists=True))
 @click.option("--config", "-c", type=click.Path(exists=True), help="System config file")
-@click.option("--format", "-f", type=click.Choice(["text", "json"]), default="text",
+@click.option("--format", "-f", "output_format", type=click.Choice(["text", "json"]), default="text",
               help="Output format")
-def run(test_file: str, config: Optional[str], format: str):
+def run(test_file: str, config: Optional[str], output_format: str):
     """Run a test from a YAML configuration file.
 
     TEST_FILE: Path to test configuration YAML file
@@ -75,7 +75,7 @@ def run(test_file: str, config: Optional[str], format: str):
         )
 
         # Output results
-        if format == "json":
+        if output_format == "json":
             print(json.dumps(result.model_dump(), indent=2))
         else:
             _print_text_result(result)

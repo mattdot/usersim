@@ -36,9 +36,9 @@ class Message(BaseModel):
 class CriterionStatus(BaseModel):
     """Status of a single success criterion."""
 
-    criterion: str
-    met: bool
-    evaluation: str
+    criterion: str = Field(description="The success criterion text")
+    met: bool = Field(description="Whether this criterion was met")
+    evaluation: str = Field(description="Explanation of why the criterion was or was not met")
 
 
 class TestResult(BaseModel):
@@ -49,7 +49,11 @@ class TestResult(BaseModel):
     turn_count: int
     transcript: List[Message]
     criteria_status: List[CriterionStatus]
-    progress_score: float = Field(ge=0.0, le=1.0)
+    progress_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Overall progress toward objective completion, from 0.0 to 1.0"
+    )
     duration_seconds: Optional[float] = None
     error_message: Optional[str] = None
 
