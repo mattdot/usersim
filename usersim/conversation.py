@@ -93,14 +93,10 @@ class ConversationManager:
         """Check if the conversation has reached the max turn limit."""
         return self.history.turn_count >= self.max_turns
     
-    async def close(self):
-        """Close the conversation and cleanup resources."""
-        if self.client:
-            self.client.close()
-    
     async def __aenter__(self):
         await self.initialize()
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close()
+        # Cleanup is automatic with async context managers
+        pass

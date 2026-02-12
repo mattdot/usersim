@@ -1,6 +1,7 @@
 """A2A Protocol client for connecting to target agents."""
 
 import httpx
+import uuid
 from typing import Optional, Dict, Any
 from usersim.a2a_protocol import AgentCard, A2ARequest, A2AResponse, A2AMessage
 
@@ -19,7 +20,7 @@ class A2AClient:
         self.timeout = timeout
         self.agent_card: Optional[AgentCard] = None
         self.session_id: Optional[str] = None
-        self._client = httpx.Client(timeout=timeout)
+        self._message_counter = 0
     
     async def discover_agent(self) -> AgentCard:
         """Discover the target agent's capabilities via its Agent Card.
@@ -56,6 +57,10 @@ class A2AClient:
         if not self.agent_card:
             raise ValueError("Agent card must be discovered before sending messages. Call discover_agent() first.")
         
+        # Generate unique message ID
+        self._message_counter += 1
+        message_id = str(uuid.uuid4())
+        
         # Construct A2A JSON-RPC 2.0 request
         request = A2ARequest(
             method="sendMessage",
@@ -64,7 +69,7 @@ class A2AClient:
                 "metadata": metadata or {},
                 "session_id": self.session_id
             },
-            id="msg-001"  # Simple ID for now
+            id=message_id
         )
         
         async with httpx.AsyncClient(timeout=self.timeout) as client:
@@ -93,13 +98,3 @@ class A2AClient:
                 self.session_id = a2a_response.result["session_id"]
             
             return A2AMessage(role="assistant", content=response_content, metadata=response_metadata)
-    
-    def close(self):
-        """Close the HTTP client."""
-        self._client.close()
-    
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
