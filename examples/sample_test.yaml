@@ -1,0 +1,21 @@
+usersim_test:
+  name: "Sample Flight Booking Test"
+  description: "Test booking a flight with the agent"
+  
+  target:
+    agent_id: "flight-booking-agent"
+    connection:
+      endpoint: "https://example-agent.com/.well-known/agent.json"
+      
+  objective:
+    goal: "Book a flight from Seattle to New York for next Tuesday"
+    success_criteria:
+      - "Flight is scheduled for correct date"
+      - "Departure city is Seattle"
+      - "Destination city is New York"
+      - "Booking confirmation received"
+    context: "Budget-conscious traveler, flexible on time"
+    
+  constraints:
+    max_turns: 15
+    timeout_seconds: 300
